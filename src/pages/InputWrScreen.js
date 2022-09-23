@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import moment from "moment";
 import { RadioButton, TextInput, Divider, Dialog, Portal, Provider, Button } from "react-native-paper";
@@ -25,9 +25,10 @@ import { RNCamera } from 'react-native-camera';
 
 
 
-export default function InputWrScreen({navigation}) {
+export default function InputWrScreen({navigation,route}) {
 
-    // const { valueQR } = useContext(QRcodeContext);
+    // let qrvalue = {route.param.paramKey};
+    const valuehendra = useContext(QRcodeContext);
     // Variable for get data sending Request WR Online
     const [nik, setNik] = useState('');
     const [machineid, setMachineId] = useState('');
@@ -45,6 +46,7 @@ export default function InputWrScreen({navigation}) {
     const showDialogUrgency = () => setVisibleUrgency(true);
     const hideDialogUrgency = () => setVisibleUrgency(false);
     const [error, setError] = React.useState('');
+    
 
 
     const [users, setUsers] = useState([]);
@@ -53,14 +55,14 @@ export default function InputWrScreen({navigation}) {
     // const { sendwr } = React.useContext(WROnlineContext);
 
     const backmenu = () => {
-        navigation.pop();
+        navigation.navigate('RequestWr')
     }
 
     //Function Submit WR Online
     const submitwronline = () => {
         const data = {
             snik: nik,
-            smach: machineid.toUpperCase(),
+            smach: route.params.paramKey,
             drepair: convertmoment_date,
             trepair: convertmoment_time,
             sproblem: problem.toUpperCase(),
@@ -73,7 +75,7 @@ export default function InputWrScreen({navigation}) {
             .then(res => {
                 // console.log('res:', res);
                 console.log('WR Berhasil Terkirim!');
-                navigation.pop();
+                navigation.navigate('RequestWr')
             })
             .catch(err => {
                 console.log(err.response.data)
@@ -91,6 +93,7 @@ export default function InputWrScreen({navigation}) {
     // convert data date & time use moment js
     var convertmoment_date = moment(new Date(date3)).format('YYYY-MM-DD');
     var convertmoment_time = moment(new Date(time3)).format('HH:mm:ss');
+    // const [qrmachine,setQrmachine]=useState(qrvalue);
 
     useEffect(() => {
         getData();
@@ -99,6 +102,8 @@ export default function InputWrScreen({navigation}) {
         console.log('Time Selection:', time3);
         console.log('Date Convert Momentjs:', convertmoment_date);
         console.log('Time Convert Momentjs:', convertmoment_time);
+        console.log('nilai QR Code:', );
+        console.log('nilai QR Code Textbox:', );
     }, [date3, time3, convertmoment_date, convertmoment_time]);
 
 
@@ -120,7 +125,7 @@ export default function InputWrScreen({navigation}) {
                         label="Machine ID"
                         left={<TextInput.Icon icon="factory" />}
                         style={{ width: '60%', marginLeft: 10 }}
-                        value={machineid} onChangeText={(value) => setMachineId(value)}
+                        value={route.params.paramKey} onChangeText={(value) => setMachineId(value)}
                         editable={false}
                     />
                     </TouchableOpacity>
@@ -194,6 +199,7 @@ export default function InputWrScreen({navigation}) {
                         </Portal>
                     </View>
                 </Provider>
+                {/* <Text>Values passed from First page: {route.params.paramKey}</Text> */}
 
                 <DatePicker
                     androidVariant="iosClone"

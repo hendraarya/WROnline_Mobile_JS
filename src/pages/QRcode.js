@@ -1,14 +1,15 @@
-import React, { Component, Fragment,useState, useEffect,useRef} from "react";
+import React, { Fragment,useState, useEffect,useRef} from "react";
 import { TouchableOpacity, Text, Linking, View, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import InputWrScreen from "./InputWrScreen";
 import { QRcodeContext } from "../context/QRcodeContext";
+import InputWrScreen from "./InputWrScreen";
 
 
 const deviceWidth = Dimensions.get('screen').width;
 const deviceHeight = Dimensions.get('screen').height;
 
 export default function QRcode ({navigation}) { 
+    let qrvalue;
     const scanner = useRef(null); //useRef itu fungsinya seperti id
     const [scan, setScan] = useState(false);
     const [scanResult, setScanResult] = useState(false);
@@ -29,11 +30,18 @@ export default function QRcode ({navigation}) {
             Linking.openURL(e.data).catch(err => console.error('An error occured', err));
         } else {
             setResult(e);
-            console.log('hasil QR:', e.data);
+            console.log('hasil QRcode.js:', e.data);
             setScan(false);
             setScanResult(true);
+            qrvalue= e.data;
+            navigation.navigate('InputWr',{paramKey: qrvalue,});
+            // navigation.navigate('InputWr');
+            
+          
     }
    };
+
+  
 
     const activeQR = () => {
         setScan(true);
@@ -45,14 +53,14 @@ export default function QRcode ({navigation}) {
         return (
 
             <View style={styles.scrollViewStyle}>
-
+           
                 <Fragment>
-                    <View style={styles.header}>
+                    {/* <View style={styles.header}>
                         <TouchableOpacity onPress={() =>navigation.navigate('RequestWr')}>
                             <Image source={require('../assets/images/back.png')} style={{ height: 36, width: 36 }}></Image>
                         </TouchableOpacity>
                         <Text style={styles.textTitle}>Scan QR Code</Text>
-                    </View>
+                    </View> */}
                     {!scan && !scanResult &&
                         <View style={styles.cardView} >
                             {/* <Image source={require('../assets/images/camera.png')} style={{ height: 36, width: 36 }}></Image>
@@ -68,18 +76,20 @@ export default function QRcode ({navigation}) {
                     }
                     {scanResult &&
                         <Fragment>
-                            <Text style={styles.textTitle1}>Result</Text>
+                        {/* <QRcodeContext.Provider value={result.data}><InputWrScreen/></QRcodeContext.Provider> */}
+                            {/* <Text style={styles.textTitle1}>Result</Text>
                             <View style={scanResult ? styles.scanCardView : styles.cardView}>
                                 <Text>Type : {result.type}</Text>
                                 <Text>Result : {result.data}</Text>
                                 <Text numberOfLines={1}>RawData: {result.rawData}</Text>
+                                 
                                 <TouchableOpacity onPress={scanAgain} style={styles.buttonScan}>
                                     <View style={styles.buttonWrapper}>
                                         <Image source={require('../assets/images/camera.png')} style={{ height: 36, width: 36 }}></Image>
                                         <Text style={{ ...styles.buttonTextStyle, color: '#2196f3' }}>Click to scan again</Text>
                                     </View>
                                 </TouchableOpacity>
-                            </View>
+                            </View> */}
                         </Fragment>
                     }
                     {scan &&
