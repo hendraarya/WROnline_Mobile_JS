@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -6,55 +6,41 @@ import AuthStackNavigator from './navigators/AuthStackNavigator';
 import 'react-native-gesture-handler';
 import { LogBox } from 'react-native';
 
-
-import { ImageBackground, Text, Image, View } from 'react-native';
-import tailwind from 'twrnc'; //library tailwindcss for react-native
-import { AuthContext } from './context/AuthContext';
+import AuthContext from './context/AuthContext';
 
 
-import Heading from './components/Heading';
 import SplashScreen from './pages/Splashscreen';
 import LoginScreen from './pages/LoginScreen';
 import RequestWrScreen from './pages/RequestWrScreen';
-import MyComponent from './pages/fabstyle';
 import InputWrScreen from './pages/InputWrScreen';
-import MainContainer from './components/MainContainer';
-import BarcodeScanner from './components/QRcodescanner';
-import { TimePickerExample } from './pages/TimePickerExample';
-import QRcode from './pages/QRcode';
+import QRcode from './pages/QRcodeScreen';
 
 
 const RootStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
+
 LogBox.ignoreLogs(['Warning: ...']);
 LogBox.ignoreAllLogs();
+
 export default function App() {
 
+  const [qrnik, setQrnik] = useState("");
+  const [qrmachineid, setQrmachineid] = useState("");
+  const value = {qrnik, setQrnik, qrmachineid,setQrmachineid};
+  // const auth = useMemo(() => ({
+  //     qrnik: 'Data Awal NIK',
+  //     qrmachineid : 'Data Awal MachineID',
+  //     qrcode: async data => {
+  //         qrnik: data.qrnik
+  //         qrmachineid: data.qrmachineid
+  //     },
+     
+  // }));
+
   return (
-    // <AuthContext.Provider value={}>
-    //   <NavigationContainer>
-    //     <RootStack.Navigator screenOptions={{ headerShown: false }}>
-    //       <RootStack.Screen name="AuthStack" component={AuthStackNavigator} />
-    //     </RootStack.Navigator>
-    //   </NavigationContainer>
-    // </AuthContext.Provider>
-    // <View >
-
-    //   <Heading> Welcome NMAX Mobile</Heading>
-
-    // </View>
-    // <SplashScreen/>
-    // <LoginScreen />
-    // <RequestWrScreen />
-    // <MyComponent />
-    // <InputWrScreen />
-    // <BarcodeScanner />
-    // <AxiosScreen />
-    // <TimePickerExample />
-
+    <AuthContext.Provider value={{value}}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-
         <Stack.Screen name="Splash">
           {(props) => <SplashScreen {...props} />}
         </Stack.Screen>
@@ -76,10 +62,9 @@ export default function App() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="RequestWr" component={RequestWrScreen} />
         <Stack.Screen name="InputWr" component={InputWrScreen} /> */}
-
       </Stack.Navigator>
     </NavigationContainer>
-
+</AuthContext.Provider>
 
   );
 };

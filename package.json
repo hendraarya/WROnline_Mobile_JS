@@ -19,6 +19,7 @@
     "patch-package": "^6.4.7",
     "react": "18.1.0",
     "react-native": "0.70.1",
+    "react-native-awesome-alerts": "^2.0.0",
     "react-native-camera": "^4.2.1",
     "react-native-date-picker": "^4.2.5",
     "react-native-datepicker": "^1.7.2",

@@ -7,7 +7,13 @@ import DatePicker from 'react-native-date-picker'
 import { FilledButton } from "../components/FilledButton";
 import { QRcodeContext } from "../context/QRcodeContext";
 
+//Library API
 import axios from "axios";
+
+//Utils
+import {sleep} from '../Utils/sleep';
+import { dialogIcons } from "../Utils/dialogIcons";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 
 //Create Container 
@@ -18,10 +24,14 @@ import MainHeader from "../components/MainHeader";
 
 //use Context(Variable Global)
 import { WROnlineContext } from "../context/WROnlineContext";
+import AuthContext from "../context/AuthContext";
 
 //QR CODE Scanner
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
+import { async } from "rxjs";
+
+
 
 
 
@@ -47,21 +57,33 @@ export default function InputWrScreen({navigation,route}) {
     const hideDialogUrgency = () => setVisibleUrgency(false);
     const [error, setError] = React.useState('');
     
-
-
     const [users, setUsers] = useState([]);
+    let disableurgent = valueproblem;
+    const [showAlert, setShowAlert] = useState(false);
+
+    const showAlert2 = () => {
+    setShowAlert(true);
+
+  };
+
+  const hideAlert = () => {
+     setShowAlert(false);
+  };
 
     //Access Function use Context(Variable Global)
+    const {value} = useContext(AuthContext);
     // const { sendwr } = React.useContext(WROnlineContext);
 
-    const backmenu = () => {
+    const backmenu = async () => {
+        await value.setQrnik("");
+        await value.setQrmachineid("");
         navigation.navigate('RequestWr')
     }
 
     //Function Submit WR Online
     const submitwronline = () => {
         const data = {
-            snik: nik,
+            snik: route.params.paramKey2,
             smach: route.params.paramKey,
             drepair: convertmoment_date,
             trepair: convertmoment_time,
@@ -72,10 +94,16 @@ export default function InputWrScreen({navigation,route}) {
         axios
             .post('http://10.202.10.77:3000/api/getnikname', data)
             /* localhost emulator harus diganti dengan ip local : 10.0.2.2, agar device tidak bingung, soalnya device use localhost */
-            .then(res => {
+            .then( async res => {
                 // console.log('res:', res);
+                
+                await value.setQrnik("");
+                await value.setQrmachineid("");
                 console.log('WR Berhasil Terkirim!');
-                navigation.navigate('RequestWr')
+                // await dialogIcons();
+                await showAlert2();
+                await sleep(1000);
+                await navigation.navigate('RequestWr');
             })
             .catch(err => {
                 console.log(err.response.data)
@@ -118,9 +146,12 @@ export default function InputWrScreen({navigation,route}) {
                 </View>
             </MainHeader>
             <MainContent>
-                <View style={{ flexDirection: 'row', margin: 30 }}>
-                    <TextInput mode="flat" label="NIK" style={{ width: '40%' }} left={<TextInput.Icon icon="sticker-text-outline" />} value={nik} onChangeText={(value) => setNik(value)} />
-                    <TouchableOpacity onPress={() => navigation.navigate('Qrcode')} style={{ width: '100%' }}>
+                <View style={{ flexDirection: 'row',alignContent:"flex-start", marginVertical:30 ,marginHorizontal:30}}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Qrcode',{fill: "fillnik"})} style={{ width: '100%' }}>
+                    <TextInput mode="flat" label="NIK" style={{ width: '40%' }} left={<TextInput.Icon icon="sticker-text-outline" />} value={route.params.paramKey2} onChangeText={(value) => setNik(value)} editable={false}/>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => navigation.navigate('Qrcode',{fill: "fillmachineid"})} style={{ width: '90%', marginLeft:-175}}>
                     <TextInput
                         label="Machine ID"
                         left={<TextInput.Icon icon="factory" />}
@@ -156,6 +187,7 @@ export default function InputWrScreen({navigation,route}) {
                     <View style={{ margin: 30, width: '85%' }}>
                         <TouchableOpacity onPress={showDialog} >
                             <TextInput mode="flat" label="Type Problem" style={{ width: '100%' }} left={<TextInput.Icon icon="tools" />} editable={false} value={valueproblem} onChangeText={(value) => setValueProblem(value)} />
+                            {}
                         </TouchableOpacity>
                         <Portal>
                             <Dialog visible={visibleproblem} onDismiss={hideDialog}>
@@ -178,7 +210,7 @@ export default function InputWrScreen({navigation,route}) {
                 <Divider />
                 <Provider>
                     <View style={{ margin: 30, width: '85%' }}>
-                        <TouchableOpacity onPress={showDialogUrgency} >
+                        <TouchableOpacity onPress={showDialogUrgency} disabled={disableurgent === 'Emergency Stop'? false:true} >
                             <TextInput mode="flat" label="Type Urgency" style={{ width: '100%' }} left={<TextInput.Icon icon="tools" />} editable={false} value={valueurgency} onChangeText={(value) => setValueUrgency(value)} />
                         </TouchableOpacity>
                         <Portal>
@@ -241,6 +273,26 @@ export default function InputWrScreen({navigation,route}) {
                         setOpentime(false)
                     }}
                 />
+
+                <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="AwesomeAlert"
+          message="I have a message for you!"
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+          showCancelButton={true}
+          showConfirmButton={true}
+          cancelText="No, cancel"
+          confirmText="Yes, delete it"
+          confirmButtonColor="#DD6B55"
+          onCancelPressed={() => {
+            hideAlert();
+          }}
+          onConfirmPressed={() => {
+            hideAlert();
+          }}
+        />
 
                 {/* {
 

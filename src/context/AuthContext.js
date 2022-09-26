@@ -1,4 +1,5 @@
-import { createContext } from "react";
+import React from "react";
 
 //buat *context* untu auth saat ini, defaultnya bernilai kosong/null
-export const AuthContext = createContext();
+const AuthContext = React.createContext();
+export default AuthContext;

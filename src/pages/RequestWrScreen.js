@@ -150,16 +150,13 @@ export default function RequestWrScreen({animatedValue,
                         })
 
                     }
-                    <View>
-                        <TouchableOpacity onPress={() => navigation.navigate('Qrcode')}><Text>Scan QRCode</Text></TouchableOpacity>
-                    </View>
                 </ScrollView>
 
                 <AnimatedFAB
                     icon={'plus'}
                     label={'Input WR Online'}
                     extended={isExtended}
-                    onPress={() => navigation.navigate('InputWr')}
+                    onPress={() => navigation.navigate('InputWr',{paramKey: "", paramKey2: ""})}
                     visible={visible}
                     animateFrom={'right'}
                     iconMode={'static'}

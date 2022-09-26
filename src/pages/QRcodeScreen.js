@@ -1,25 +1,28 @@
-import React, { Fragment,useState, useEffect,useRef} from "react";
+import React, { Fragment,useState, useEffect,useRef, useContext} from "react";
 import { TouchableOpacity, Text, Linking, View, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
 import QRCodeScanner from 'react-native-qrcode-scanner';
-import { QRcodeContext } from "../context/QRcodeContext";
-import InputWrScreen from "./InputWrScreen";
+import AuthContext from "../context/AuthContext";
 
 
 const deviceWidth = Dimensions.get('screen').width;
 const deviceHeight = Dimensions.get('screen').height;
 
-export default function QRcode ({navigation}) { 
-    let qrvalue;
+export default function QRcode ({navigation,route}) { 
+    // let qrmachineid, qrnik ;
     const scanner = useRef(null); //useRef itu fungsinya seperti id
-    const [scan, setScan] = useState(false);
+    const [scan, setScan] = useState(true);
     const [scanResult, setScanResult] = useState(false);
     const [result, setResult] = useState(null);
+
+    const {value} = useContext(AuthContext);
+    console.log('Context qrmachineid:',value.qrmachineid);
+    console.log('Context qrnik:',value.qrnik);
 
     useEffect(() => {
         setResult(null);
     }, []);
 
-    const onSuccess = (e) => {
+    const onSuccess = async (e) => {
         const check = e.data.substring(0, 4);
         console.log('scanned data ' + check);
         setResult(e);
@@ -29,14 +32,25 @@ export default function QRcode ({navigation}) {
         if (check === 'http') {
             Linking.openURL(e.data).catch(err => console.error('An error occured', err));
         } else {
-            setResult(e);
-            console.log('hasil QRcode.js:', e.data);
-            setScan(false);
-            setScanResult(true);
-            qrvalue= e.data;
-            navigation.navigate('InputWr',{paramKey: qrvalue,});
-            // navigation.navigate('InputWr');
+            if(route.params.fill === 'fillnik')
+            {
+            await setResult(e);
+            console.log('hasil QRcode.js nik:', e.data);
+            await setScan(false);
+            await setScanResult(true);
+            await value.setQrnik(e.data)
+            await navigation.navigate('InputWr',{paramKey:value.qrmachineid,paramKey2: e.data});
+            }
+            else if(route.params.fill === 'fillmachineid')
+            {
+            await setResult(e);
+            console.log('hasil QRcode.js machine id:', e.data);
             
+            await setScan(false);
+            await setScanResult(true);
+            await value.setQrmachineid(e.data);
+            await navigation.navigate('InputWr',{paramKey:e.data,paramKey2: value.qrnik});     
+            }
           
     }
    };
@@ -51,47 +65,10 @@ export default function QRcode ({navigation}) {
         setScanResult(false);
     }
         return (
-
             <View style={styles.scrollViewStyle}>
-           
                 <Fragment>
-                    {/* <View style={styles.header}>
-                        <TouchableOpacity onPress={() =>navigation.navigate('RequestWr')}>
-                            <Image source={require('../assets/images/back.png')} style={{ height: 36, width: 36 }}></Image>
-                        </TouchableOpacity>
-                        <Text style={styles.textTitle}>Scan QR Code</Text>
-                    </View> */}
-                    {!scan && !scanResult &&
-                        <View style={styles.cardView} >
-                            {/* <Image source={require('../assets/images/camera.png')} style={{ height: 36, width: 36 }}></Image>
-                            <Text numberOfLines={8} style={styles.descText}>Please move your camera {"\n"} over the QR Code</Text>
-                            <Image source={require('../assets/images/qr-code.png')} style={{ margin: 20 }}></Image> */}
-                            <TouchableOpacity onPress={activeQR} style={styles.buttonScan}>
-                                <View style={styles.buttonWrapper}>
-                                    <Image source={require('../assets/images/camera.png')} style={{ height: 36, width: 36 }}></Image>
-                                    <Text style={{ ...styles.buttonTextStyle, color: '#2196f3' }}>Scan QR Code</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    }
-                    {scanResult &&
-                        <Fragment>
-                        {/* <QRcodeContext.Provider value={result.data}><InputWrScreen/></QRcodeContext.Provider> */}
-                            {/* <Text style={styles.textTitle1}>Result</Text>
-                            <View style={scanResult ? styles.scanCardView : styles.cardView}>
-                                <Text>Type : {result.type}</Text>
-                                <Text>Result : {result.data}</Text>
-                                <Text numberOfLines={1}>RawData: {result.rawData}</Text>
-                                 
-                                <TouchableOpacity onPress={scanAgain} style={styles.buttonScan}>
-                                    <View style={styles.buttonWrapper}>
-                                        <Image source={require('../assets/images/camera.png')} style={{ height: 36, width: 36 }}></Image>
-                                        <Text style={{ ...styles.buttonTextStyle, color: '#2196f3' }}>Click to scan again</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            </View> */}
-                        </Fragment>
-                    }
+
+                    {/* Strat Show camera to scan Barcode */}
                     {scan &&
                         <QRCodeScanner
                             reactivate={true}
@@ -116,6 +93,7 @@ export default function QRcode ({navigation}) {
                         }
                         />
                     }
+                    {/* End Show camera to scan Barcode */}
                 </Fragment>
             </View>
 
