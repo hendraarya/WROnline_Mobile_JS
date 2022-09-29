@@ -1,9 +1,11 @@
-import React from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView } from "react-native";
-import { Card, Title, DataTable, Divider, Searchbar, AnimatedFAB } from 'react-native-paper';
+import React, { useState } from "react";
+import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView,FlatList,StatusBar } from "react-native";
+import { Card, Title, Divider, AnimatedFAB,Paragraph, Dialog, Portal} from 'react-native-paper';
+
+//Add Component 
 import { MenuHeader } from "../components/MenuHeader";
 import { MenuFooter } from "../components/MenuFooter";
-import Icon from 'react-native-vector-icons/Ionicons';
+import { SearchData } from "../components/SearchData";
 
 //Create Main Container
 import MainContainer from "../components/MainContainer";
@@ -11,101 +13,74 @@ import MainHeader from "../components/MainHeader";
 import MainContent from "../components/MainContent";
 import MainFooter from "../components/MainFooter";
 
+//Library API
+import axios from "axios";
 
-const wronline = [
-    {
-        wrid: 'WR220818-01',
-        machine_no: 'HP-123-ID',
-        date: '2022-03-10',
-        time: '10:02:01',
-        problem: 'Mold Abnormal',
-        priority: 'Prioroty 1',
-        status: 'Received'
-    },
-    {
-        wrid: 'WR220818-02',
-        machine_no: 'HP-124-ID',
-        date: '2022-03-10',
-        time: '10:02:01',
-        problem: 'Mold Abnormal',
-        priority: 'Prioroty 1',
-        status: ''
-    },
-    {
-        wrid: 'WR220818-03',
-        machine_no: 'HP-125-ID',
-        date: '2022-03-11',
-        time: '12:02:01',
-        problem: 'Emergency',
-        priority: 'Prioroty 2',
-        status: 'Received'
-    },
-    {
-        wrid: 'WR220818-04',
-        machine_no: 'HP-127-ID',
-        date: '2022-03-17',
-        time: '12:02:01',
-        problem: 'Broken',
-        priority: 'Prioroty 3',
-        status: 'Received'
-    },
-    {
-        wrid: 'WR220818-05',
-        machine_no: 'HP-129-ID',
-        date: '2022-03-19',
-        time: '15:02:01',
-        problem: 'Emergency',
-        priority: 'Prioroty 1',
-        status: 'Received'
-    },
+export default function RequestWrScreen({animatedValue,visible,extended,label,animateFrom,style,iconMode, navigation}) {
+
+    const [posts, setPosts] = useState([]);
+    const [err, setErr] = useState("");
+    const [term, setTerm] = useState("");
+
+    //Start Show Dialog Info WR Online
+    const showDialog = () => setVisible2(true);
+    const [visible2, setVisible2] = React.useState(false);
+    const hideDialog = () => setVisible2(false);
 
 
-    // more users here
-];
-
-let finalObj = {}
-wronline.forEach((games) => {
-    const date = games.date.split('T')[0]
-    if (finalObj[date]) {
-        finalObj[date].push(games);
-    } else {
-        finalObj[date] = [games];
-    }
-})
-
-const optionsPerPage = [2, 3, 4];
-
-export default function RequestWrScreen({animatedValue,
-    visible,
-    extended,
-    label,
-    animateFrom,
-    style,
-    iconMode, navigation}) {
-    const [page, setPage] = React.useState(0);
-    const [itemsPerPage, setItemsPerPage] = React.useState(optionsPerPage[0]);
-
-    const [searchQuery, setSearchQuery] = React.useState('');
-
-    const onChangeSearch = (query) => setSearchQuery(query);
-
-
+    //Start Create Animated FAB Input WR Online
     const [isExtended, setIsExtended] = React.useState(true);
-
     const isIOS = Platform.OS === 'ios';
-
-    const onScroll = ({ nativeEvent }) => {
+    const onScroll = ({ nativeEvent }) => 
+    {
         const currentScrollPosition =
             Math.floor(nativeEvent?.contentOffset?.y) ?? 0;
-
         setIsExtended(currentScrollPosition <= 0);
     };
-
     const fabStyle = { [animateFrom]: 16 };
+    //End Create Animated FAB Input WR Online
 
+    //Declare useState for get data AXIOS
+    const [gettotalWrtoday, setGettotalWrtoday] = useState({count:''});
+    const [gettotalallWr, setGettotalallWr] = useState({count: '',});
+    const [getdatawr, setGetdatawr] = useState([]);
+
+    //start Get Data with AXIOS
+    const getData_totalwrtoday = () => {
+    axios
+    .get('http://10.202.10.77:3000/api/countdatawrtoday')
+    .then(res => {
+            // console.log("nilai count total WR Today:", res.data.data);
+            setGettotalWrtoday(res.data.data[0]);
+        });
+    }
+
+    const getData_totalallwr = () => {
+    axios
+    .get('http://10.202.10.77:3000/api/countdataallwr')
+    .then(res => {
+            // console.log("nilai count total all WR:", res.data.data);
+            setGettotalallWr(res.data.data[0]);
+        });
+    }
+
+    const getData_Wr = (t) => {
+    axios
+    .get('http://10.202.10.77:3000/api/getalldata_wr')
+    .then(result => {
+        setGetdatawr(result.data.data.dataresult);
+        // console.log("dat wr online:", result.data.data.dataresult[0]);
+    });
+    }
+    //End Get Data with AXIOS
+
+    
+    //useEffect for Re render Component , even first running
     React.useEffect(() => {
-        setPage(0);
-    }, [itemsPerPage]);
+        getData_totalwrtoday();
+        getData_totalallwr();
+        getData_Wr(term);
+    },[term]);
 
     return (
         <MainContainer>
@@ -121,11 +96,11 @@ export default function RequestWrScreen({animatedValue,
                             <View style={{}}>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                                     <Text style={{ fontWeight: 'bold', color: '#08737f' }}>Total WR Online Today</Text>
-                                    <Text style={{ fontWeight: 'bold', color: '#08737f', fontSize: 16 }}>40</Text>
+                                    <Text style={{ fontWeight: 'bold', color: '#08737f', fontSize: 16 }}>{gettotalWrtoday.count}</Text>
                                 </View>
                                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', margin: 10 }}>
                                     <Text style={{ fontWeight: 'bold', color: '#08737f' }}>Total All WR Online</Text>
-                                    <Text style={{ fontWeight: 'bold', color: '#08737f', fontSize: 16 }}>2000</Text>
+                                    <Text style={{ fontWeight: 'bold', color: '#08737f', fontSize: 16 }}>{gettotalallWr.count}</Text>
                                 </View>
                             </View>
                         </Card.Content>
@@ -133,22 +108,53 @@ export default function RequestWrScreen({animatedValue,
                 </View>
                 <Divider />
 
-                <Searchbar
-                    placeholder="Search"
-                    onChangeText={onChangeSearch}
-                    value={searchQuery}
-                />
-                <ScrollView>
+                <SearchData onSearchEnter={(newTerm) => {
+               setTerm(newTerm);
+               setErr("");
+                }}/>
+                <View style={styles.headerdatawr}>
+                    <Text style={styles.textdatawr}>Tanggal</Text>
+                    <Text style={styles.textdatawr}>Priority</Text>
+                    <Text style={styles.textdatawr}>Status WR</Text>
+                </View>
+                <ScrollView  onScroll={onScroll}>
                     {
-
-                        wronline.map((value, index) => {
+                        getdatawr.map((value,index) => {
                             return (
                                 <View key={index}>
-                                    <Text>{value.wrid}</Text>
+                                    <Text style={[styles.textdatewr, {marginTop:'3%'}]}>{value.date}</Text>
+                                    <Divider />
+                                    
+                                    {
+                                        value.values.map((value2,index2) => {
+                                            return (
+                        
+                                            <View key={index2}>
+                                              <View style={styles.styledatawr}>
+                                                <View style={{flexDirection:'column'}}>
+                                                <Text style={[styles.styletextdatawr,{fontWeight:'bold'}]}>{value2.swr}</Text>
+                                                <Text style={styles.styletextdatawr}>{value2.smach}</Text>
+                                                <Text style={styles.styletextdatawr}>{value2.trepair}</Text>
+                                                <Text style={[styles.styletextdatawr,{width:80}]} ellipsizeMode='tail' numberOfLines={1} >{value2.sproblem}</Text>
+                                                </View>
+                                                <Text style={[styles.styletextdatawr, {paddingTop:'8%', marginLeft: '25%'}]}>{value2.spriority}</Text>
+                                                {
+                                                 value2.sstatus === 'RECEIVED'
+                                                 ?<Text style={[styles.styletextdatawr, {paddingTop:'8%',marginLeft: '25%',color:'green'}]}>{value2.sstatus}</Text>
+                                                 :<Text style={[styles.styletextdatawr, {paddingTop:'8%',marginLeft: '25%',color:'red'}]}>{value2.sstatus}</Text>
+                                                }     
+                                              </View>
+                                                <Divider style={{borderWidth:0.3, borderColor:'#c7c4c4'}}/>
+                                            </View>
+                                    
+                                            );
+                                        })
+                                    }
+                                    
+                                    
                                 </View>
-                            );
-                        })
-
+                            )
+                        }) 
                     }
                 </ScrollView>
 
@@ -162,6 +168,19 @@ export default function RequestWrScreen({animatedValue,
                     iconMode={'static'}
                     style={[styles.fabStyle, style, fabStyle]}
                 />
+         {/* <View>    
+        <Portal>
+          <Dialog visible={visible2} onDismiss={hideDialog}>
+            <Dialog.Title>Alert</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph>This is simple dialog</Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+            <TouchableOpacity onPress={hideDialog}>Done</TouchableOpacity>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+        </View>    */}
 
             </MainContent>
 
@@ -180,5 +199,36 @@ const styles = StyleSheet.create({
     },
     datatable1: {
         fontSize: 5,
+    },
+    headerdatawr: {
+        backgroundColor: '#f8f8ed',
+        flexDirection: 'row',
+        justifyContent:"space-between",
+        padding:'3%'
+        
+    },
+    styledatawr:{
+        flexDirection: 'row',
+        justifyContent:"space-between",
+        width: '75%'
+        
+        
+    },
+    styletextdatawr:{
+        fontSize:14,
+        color: 'black',
+        textAlign: 'left'
+    },
+    textdatawr:{
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#08737f',
+        textAlign: 'center'
+    },
+    textdatewr:{
+        fontSize: 15,
+        fontWeight: 'bold',
+        color: '#342a2a',
+        backgroundColor:'#d0d7d2',
     },
 });

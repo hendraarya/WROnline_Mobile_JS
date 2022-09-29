@@ -102,7 +102,7 @@ export default function InputWrScreen({navigation,route}) {
                 console.log('WR Berhasil Terkirim!');
                 // await dialogIcons();
                 await showAlert2();
-                await sleep(1000);
+                await sleep(2000);
                 await navigation.navigate('RequestWr');
             })
             .catch(err => {
@@ -231,7 +231,6 @@ export default function InputWrScreen({navigation,route}) {
                         </Portal>
                     </View>
                 </Provider>
-                {/* <Text>Values passed from First page: {route.params.paramKey}</Text> */}
 
                 <DatePicker
                     androidVariant="iosClone"
@@ -277,37 +276,11 @@ export default function InputWrScreen({navigation,route}) {
                 <AwesomeAlert
           show={showAlert}
           showProgress={false}
-          title="AwesomeAlert"
-          message="I have a message for you!"
+          title="Message"
+          message="Sending Work Request Successfully !!"
           closeOnTouchOutside={true}
           closeOnHardwareBackPress={false}
-          showCancelButton={true}
-          showConfirmButton={true}
-          cancelText="No, cancel"
-          confirmText="Yes, delete it"
-          confirmButtonColor="#DD6B55"
-          onCancelPressed={() => {
-            hideAlert();
-          }}
-          onConfirmPressed={() => {
-            hideAlert();
-          }}
         />
-
-                {/* {
-
-                    users.map((value, index) => {
-                        return (
-                            <View key={index}>
-                                <Text>{value.id}</Text>
-                                <Text>{value.name}</Text>
-                            </View>
-                        );
-                    })
-
-                } */}
-
-
 
             </MainContent>
             <MainFooter>
