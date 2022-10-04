@@ -85,7 +85,7 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
     return (
         <MainContainer>
             <MainHeader>
-                <MenuHeader />
+                <MenuHeader onPress1={() => navigation.navigate('notif')} onPress2={() => navigation.navigate('help')} />
             </MainHeader>
             <MainContent>
                 <View>
@@ -113,7 +113,7 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
                setErr("");
                 }}/>
                 <View style={styles.headerdatawr}>
-                    <Text style={styles.textdatawr}>Tanggal</Text>
+                    <Text style={styles.textdatawr}>Date</Text>
                     <Text style={styles.textdatawr}>Priority</Text>
                     <Text style={styles.textdatawr}>Status WR</Text>
                 </View>
@@ -185,7 +185,7 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
             </MainContent>
 
             <MainFooter>
-                <MenuFooter color1='white' color2='#92dc7e' style1={{ color: 'white' }} style2={{ color: '#92dc7e' }} />
+                 <MenuFooter color1='white' color2='#92dc7e' color3='white' style1={{ color: 'white' }} style2={{ color: '#92dc7e' }} style3={{ color: 'white' }} onPress1={() => navigation.navigate('Home')} onPress2={() => navigation.navigate('RequestWr')} onPress3={() => navigation.navigate('InfoAccount')}/>
             </MainFooter>
         </MainContainer>
     );
