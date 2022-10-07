@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView,FlatList,StatusBar } from "react-native";
-import { Card, Title, Divider, AnimatedFAB,Paragraph, Dialog, Portal} from 'react-native-paper';
+import { Card, Title, Divider, AnimatedFAB,Paragraph, Dialog, Portal,Searchbar} from 'react-native-paper';
 
 //Add Component 
 import { MenuHeader } from "../components/MenuHeader";
@@ -18,14 +18,29 @@ import axios from "axios";
 
 export default function RequestWrScreen({animatedValue,visible,extended,label,animateFrom,style,iconMode, navigation}) {
 
+    //Start variable for function search data wr online
     const [posts, setPosts] = useState([]);
-    const [err, setErr] = useState("");
+    const [err, setErr] = useState("Data Not Found !");
     const [term, setTerm] = useState("");
+
+    // const [searchQuery, setSearchQuery] = React.useState([]);
+    const[filterData, setfilterData] = useState([]);
+    const [search, setSearch] = useState('');
+    
+    // const onChangeSearch = query => setSearchQuery(query);
+    //End variable for function search data wr online
+
+    //Start variable for function pagination data wr online
+    const [page, setPage] = useState(1);
+    const [offpagging, setoffPagging] = useState();
+    const resetData = useRef(false);
+    //End variable for function pagination data wr online
 
     //Start Show Dialog Info WR Online
     const showDialog = () => setVisible2(true);
     const [visible2, setVisible2] = React.useState(false);
     const hideDialog = () => setVisible2(false);
+    //End Show Dialog Info WR Online
 
 
     //Start Create Animated FAB Input WR Online
@@ -64,23 +79,111 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
         });
     }
 
-    const getData_Wr = (t) => {
+    const getData_Wr = () => {
     axios
-    .get('http://10.202.10.77:3000/api/getalldata_wr')
+    .get(`http://10.202.10.77:3000/api/getalldata_wr/${page}`)
     .then(result => {
         setGetdatawr(result.data.data.dataresult);
+        setfilterData(result.data.data.dataresult);
         // console.log("dat wr online:", result.data.data.dataresult[0]);
     });
     }
+
+    const searchDataWr = (t) => {
+        axios
+        .get(`http://10.202.10.77:3000/api/searchdatawr/2022-09-29`)
+        .then((res) => {
+            if (res.data.data.length > 0){
+                setPosts(res.data.data);
+            }
+            else {
+                setPosts([]);
+                setErr("Data not found");
+            }
+        });
+    };
     //End Get Data with AXIOS
+
+    const searchFilter = (text) => {
+        
+            if(text) {
+                const newData = getdatawr.filter((item) => {
+                    const itemData = item.date ? item.date : '';
+                    const textData = text.toUpperCase();
+                    return itemData.indexOf(textData) > -1;                 
+                });
+                setfilterData(newData);
+                setSearch(text);
+                resetData.current = true;
+            }
+            else {
+                setfilterData(getdatawr);
+                setSearch(text);
+                resetData.current = false;
+            }
+        
+    }
+
+    const ItemSeparatorView = () => {
+        return (
+            <View style={{height:0.5, width:'100%', backgroundColor:'#c8c8c8'}}/>
+        )
+    }
+
+     const handleOnEnd = () => {
+    if (search.length > 1) {
+      return
+    }
+    
+    setPage(page + 1);
+    
+  };
+
+
+
+
+    //Start render data all dara wr online
+    const renderAlldatawr = ({item}) => {
+        return (
+           <View>
+            <Text style={[styles.textdatewr, {marginTop:'3%'}]}>{item.date}</Text>
+            <Divider />
+                <FlatList
+                    data = {item.values}
+                    renderItem={({ item }) => 
+                    <View>
+                    <View style={styles.styledatawr}>
+                    <View style={{flexDirection:'column'}}>
+                    <Text style={[styles.styletextdatawr,{fontWeight:'bold'}]}>{item.swr}</Text>
+                    <Text style={styles.styletextdatawr}>{item.smach}</Text>
+                    <Text style={styles.styletextdatawr}>{item.trepair}</Text>
+                    <Text style={[styles.styletextdatawr,{width:80}]} ellipsizeMode='tail' numberOfLines={1} >{item.sproblem}</Text>
+                    </View>
+                    <Text style={[styles.styletextdatawr, {paddingTop:'8%', marginLeft: '25%'}]}>{item.spriority}</Text>
+                    {
+                        item.sstatus === 'RECEIVED'
+                        ?<Text style={[styles.styletextdatawr, {paddingTop:'8%',marginLeft: '25%',color:'green'}]}>{item.sstatus}</Text>
+                        :<Text style={[styles.styletextdatawr, {paddingTop:'8%',marginLeft: '25%',color:'red'}]}>{item.sstatus}</Text>
+                    }     
+                    </View>
+                    <Divider style={{borderWidth:0.3, borderColor:'#c7c4c4'}}/>
+                </View>
+                    }
+                        
+                />
+            </View>
+        );
+    }
+    //End render data all dara wr online
 
     
     //useEffect for Re render Component , even first running
     React.useEffect(() => {
         getData_totalwrtoday();
         getData_totalallwr();
-        getData_Wr(term);
-    },[term]);
+        getData_Wr();
+        searchDataWr(term);
+    },[term,page,search]);
 
     return (
         <MainContainer>
@@ -108,17 +211,33 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
                 </View>
                 <Divider />
 
-                <SearchData onSearchEnter={(newTerm) => {
+                <Searchbar
+                    placeholder="Search"                  
+                    value={search}
+                    onChangeText={(text) => searchFilter(text)}
+                    />
+
+                {/* <SearchData onSearchEnter={(newTerm) => {
                setTerm(newTerm);
                setErr("");
-                }}/>
+                }}/> */}
+
                 <View style={styles.headerdatawr}>
                     <Text style={styles.textdatawr}>Date</Text>
                     <Text style={styles.textdatawr}>Priority</Text>
                     <Text style={styles.textdatawr}>Status WR</Text>
                 </View>
-                <ScrollView  onScroll={onScroll}>
-                    {
+
+                <FlatList
+                    data = {filterData}
+                    onEndReachedThreshold={2}
+                    onEndReached={handleOnEnd}
+                    ItemSeparatorComponent={ItemSeparatorView}
+                    renderItem = {renderAlldatawr}
+                />
+                
+                    
+                    {/* {
                         getdatawr.map((value,index) => {
                             return (
                                 <View key={index}>
@@ -155,8 +274,7 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
                                 </View>
                             )
                         }) 
-                    }
-                </ScrollView>
+                    } */}
 
                 <AnimatedFAB
                     icon={'plus'}

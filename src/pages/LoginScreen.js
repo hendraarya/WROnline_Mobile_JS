@@ -20,7 +20,7 @@ export default function LoginScreen({navigation}) {
     //Function Login WR Online
     const submitwronline = () => {
         const data = {
-            username2: username,
+            username2: username.toLowerCase(),
             password4: password,
         };
         axios
