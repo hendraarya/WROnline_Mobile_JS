@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image } from "react-native";
 
 //Add Component
 import { FilledButton } from "../components/FilledButton";
-import Input from "../components/Input";
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 //Add Additional Library
 import {TextInput} from 'react-native-paper';
@@ -12,6 +12,14 @@ import {TextInput} from 'react-native-paper';
 import axios from "axios";
 
 export default function LoginScreen({navigation}) {
+
+    const [showAlert, setShowAlert] = useState(false);
+    const [error, setError] = useState('');
+
+    const showAlert2 = () => {
+    setShowAlert(true);
+
+  };
 
     //variable useState
     const [username, setUsername] = useState('');
@@ -32,8 +40,10 @@ export default function LoginScreen({navigation}) {
                 await navigation.navigate('Home');
                 
             })
-            .catch(err => {
-                console.log(err.response.data)
+            .catch(async err => {
+                console.log(err);
+                await setError(err.response.data.message);
+                // await showAlert2();
             })
     }
 
@@ -43,6 +53,7 @@ export default function LoginScreen({navigation}) {
                 <Image source={require('../assets/images/logonmaxsmall2.png')} />
             </View>
             <View style={styles.content}>
+                    <Text>{error}</Text>
                  <TextInput label="Username" placeholder="Username" style={styles.input} value={username} onChangeText={(value) => setUsername(value)}/>
                  <TextInput label="Password" placeholder="Password" secureTextEntry={true} value={password} right={<TextInput.Icon icon="eye" />} style={styles.input} onChangeText={(value) => setPassword(value)}/>
                 <FilledButton title='Masuk' style={styles.button} onPress={submitwronline} />
@@ -52,11 +63,20 @@ export default function LoginScreen({navigation}) {
                 <Text style={styles.text2}>Manufacture Engineering Dept | Technology Control Sect</Text>
                 <Text style={styles.text3}>Version 1.0.0</Text>
             </View>
+            <AwesomeAlert
+          show={showAlert}
+          showProgress={false}
+          title="Message"
+          message= {error}
+          closeOnTouchOutside={true}
+          closeOnHardwareBackPress={false}
+        />
         </View>
+
+        
     );
 }
 
-// Kindacode.com
 // Just some styles
 const styles = StyleSheet.create({
     container: {

@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Platform, ScrollView,FlatList,StatusBar } from "react-native";
-import { Card, Title, Divider, AnimatedFAB,Paragraph, Dialog, Portal,Searchbar} from 'react-native-paper';
+import { Card, Title, Divider, AnimatedFAB,Paragraph, Dialog, Portal,Searchbar, Provider,Button, Avatar} from 'react-native-paper';
 
 //Add Component 
 import { MenuHeader } from "../components/MenuHeader";
@@ -15,6 +15,7 @@ import MainFooter from "../components/MainFooter";
 
 //Library API
 import axios from "axios";
+import moment from "moment";
 
 export default function RequestWrScreen({animatedValue,visible,extended,label,animateFrom,style,iconMode, navigation}) {
 
@@ -31,7 +32,7 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
     //End variable for function search data wr online
 
     //Start variable for function pagination data wr online
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState(4);
     const [offpagging, setoffPagging] = useState();
     const resetData = useRef(false);
     //End variable for function pagination data wr online
@@ -40,6 +41,22 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
     const showDialog = () => setVisible2(true);
     const [visible2, setVisible2] = React.useState(false);
     const hideDialog = () => setVisible2(false);
+
+    //Get Data Detail Information WR Online
+    const [swr, setSwr] = useState('');
+    const [snik, setSnik] = useState('');
+    const [snikname, setSnikname] = useState('');
+    const [smach, setSmach] = useState('');
+    const [smachname, setSmachname] = useState('');
+    const [drepair, setDrepair] = useState('');
+    const [trepair, setTrepair] = useState('');
+    const [sproblem, setSproblem] = useState('');
+    const [surgency, setSurgency] = useState('');
+    const [dinput, setDinput] = useState('');
+    const [spriority, setSpriority] = useState('');
+    const [sstatus, setSstatus] = useState('');
+    const [sremark, setSremark] = useState('');
+    
     //End Show Dialog Info WR Online
 
 
@@ -114,12 +131,12 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
                 });
                 setfilterData(newData);
                 setSearch(text);
-                resetData.current = true;
+                
             }
             else {
                 setfilterData(getdatawr);
                 setSearch(text);
-                resetData.current = false;
+                
             }
         
     }
@@ -130,14 +147,27 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
         )
     }
 
-     const handleOnEnd = () => {
-    if (search.length > 1) {
-      return
+    const handleOnEnd = () => {
+        setPage(page + 1);
+        };
+
+
+    const parsdatatomodal = (item) => {
+        showDialog();
+        setSwr(item.swr);
+        setSnik(item.snik);
+        setSnikname(item.snikname);
+        setSmach(item.smach);
+        setSmachname(item.smachname);
+        setDrepair(item.drepair);
+        setTrepair(item.trepair);
+        setSproblem(item.sproblem);
+        setSurgency(item.surgency);
+        setDinput(item.dinput);
+        setSpriority(item.spriority);
+        setSstatus(item.sstatus);
+        setSremark(item.sremark);
     }
-    
-    setPage(page + 1);
-    
-  };
 
 
 
@@ -151,9 +181,10 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
                 <FlatList
                     data = {item.values}
                     renderItem={({ item }) => 
-                    <View>
+                    <TouchableOpacity onPress={()=> parsdatatomodal(item)}>
+                    <View >
                     <View style={styles.styledatawr}>
-                    <View style={{flexDirection:'column'}}>
+                    <View style={{flexDirection:'column'}} >
                     <Text style={[styles.styletextdatawr,{fontWeight:'bold'}]}>{item.swr}</Text>
                     <Text style={styles.styletextdatawr}>{item.smach}</Text>
                     <Text style={styles.styletextdatawr}>{item.trepair}</Text>
@@ -168,6 +199,7 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
                     </View>
                     <Divider style={{borderWidth:0.3, borderColor:'#c7c4c4'}}/>
                 </View>
+                </TouchableOpacity>
                     }
                         
                 />
@@ -230,7 +262,7 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
 
                 <FlatList
                     data = {filterData}
-                    onEndReachedThreshold={2}
+                    onEndReachedThreshold={0.01}
                     onEndReached={handleOnEnd}
                     ItemSeparatorComponent={ItemSeparatorView}
                     renderItem = {renderAlldatawr}
@@ -286,19 +318,35 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
                     iconMode={'static'}
                     style={[styles.fabStyle, style, fabStyle]}
                 />
-         {/* <View>    
+        <Provider>
+         <View>    
         <Portal>
           <Dialog visible={visible2} onDismiss={hideDialog}>
-            <Dialog.Title>Alert</Dialog.Title>
+            <Dialog.Title>Detail Information of WR Online</Dialog.Title>
             <Dialog.Content>
-              <Paragraph>This is simple dialog</Paragraph>
+             <Avatar.Icon size={100} icon="shield-account" color="" style={{marginHorizontal:'30%',backgroundColor:'white'}} />
+              <Text style={{fontSize:16, fontWeight: 'bold', marginHorizontal: '14%'}}>{snik}<Text style={{color:'#01a4a5', fontSize:17}}> {snikname}</Text></Text>
+              <Text style={{fontSize:15, fontWeight: 'bold', marginHorizontal: '15%'}}>{swr} | <Text style={{color:'#a50201'}}>{spriority}</Text></Text>
+              <Divider/>
+              <Text>Machine Info :</Text>
+              <Text style={{fontWeight:'bold'}}>{smach} | {smachname}</Text>
+              <Text>Datetime Failure:</Text>
+              <Text style={{fontWeight:'bold'}}>{trepair} | {drepair}</Text>
+              <Text>Problem :</Text>
+              <Text style={{fontWeight:'bold'}}>{sproblem}</Text>
+              <Text>Type of Urgency:</Text>
+              <Text style={{fontWeight:'bold'}}>{surgency}</Text>
+              <Divider/>
+              <Text style={{fontWeight:'bold', fontSize:14, marginTop:'5%'}}>Status   : <Text style={{ backgroundColor:'#eba136',color:'white', fontSize:18, fontWeight: 'bold'}}>{sstatus}</Text> </Text>
+              <Text style={{fontWeight:'bold', fontSize:14}}>Remark :{sremark}</Text>
             </Dialog.Content>
             <Dialog.Actions>
-            <TouchableOpacity onPress={hideDialog}>Done</TouchableOpacity>
+            <Button onPress={hideDialog}>Done</Button>
             </Dialog.Actions>
           </Dialog>
         </Portal>
-        </View>    */}
+        </View>  
+        </Provider> 
 
             </MainContent>
 
