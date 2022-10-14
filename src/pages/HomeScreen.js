@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import {Text, Image, View, StyleSheet} from 'react-native';
 
 //Create Main Container
@@ -6,6 +6,9 @@ import MainContainer from "../components/MainContainer";
 import MainHeader from "../components/MainHeader";
 import MainContent from "../components/MainContent";
 import MainFooter from "../components/MainFooter";
+
+//Add UseContext for create variable global
+import AuthContext from "../context/AuthContext";
 
 //Add Component 
 import { MenuHeader } from "../components/MenuHeader";
@@ -23,6 +26,8 @@ export default function HomeScreen({navigation}){
     //Declare useState for get data AXIOS
     const [gettotalWrtoday, setGettotalWrtoday] = useState({count:''});
     const [getdatcountstatuswr, setGetdatcountstatuswr] = useState({count:''})
+
+    const {datglobaluserlogin} = useContext(AuthContext);
 
     //start Get Data with AXIOS
     const getData_totalwrtoday = () => {
@@ -56,7 +61,7 @@ export default function HomeScreen({navigation}){
             </MainHeader>
             <MainContent>
                 <View style={styles.maincontent}>
-                    <Text style={styles.textwelcome}>Welcome <Text style={{color:'#d66493', fontSize: 21, fontVariant: ['oldstyle-nums'], fontStyle: 'italic', fontWeight:'bold' }}>Production 3</Text></Text>
+                    <Text style={styles.textwelcome}>Welcome <Text style={{color:'#d66493', fontSize: 21, fontVariant: ['oldstyle-nums'], fontStyle: 'italic', fontWeight:'bold' }}>{datglobaluserlogin.datauserlogin.sname}</Text></Text>
                 </View>
                  <View>
                     <Card>

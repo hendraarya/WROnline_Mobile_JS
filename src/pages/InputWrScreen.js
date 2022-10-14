@@ -187,7 +187,6 @@ export default function InputWrScreen({navigation,route}) {
                     <View style={{ margin: 30, width: '85%' }}>
                         <TouchableOpacity onPress={showDialog} >
                             <TextInput mode="flat" label="Type Problem" style={{ width: '100%' }} left={<TextInput.Icon icon="tools" />} editable={false} value={valueproblem} onChangeText={(value) => setValueProblem(value)} />
-                            {}
                         </TouchableOpacity>
                         <Portal>
                             <Dialog visible={visibleproblem} onDismiss={hideDialog}>

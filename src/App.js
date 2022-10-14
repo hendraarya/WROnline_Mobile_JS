@@ -28,9 +28,14 @@ LogBox.ignoreAllLogs();
 
 export default function App() {
 
+  //Variable Global UseContext
   const [qrnik, setQrnik] = useState("");
   const [qrmachineid, setQrmachineid] = useState("");
+  const [datauserlogin, setDatauserlogin] = useState([]);
+
+  //initialization variable to use global
   const value = {qrnik, setQrnik, qrmachineid,setQrmachineid};
+  const datglobaluserlogin = {datauserlogin,setDatauserlogin};
   // const auth = useMemo(() => ({
   //     qrnik: 'Data Awal NIK',
   //     qrmachineid : 'Data Awal MachineID',
@@ -61,7 +66,7 @@ export default function App() {
 
   return (
    
-    <AuthContext.Provider value={{value}}>
+    <AuthContext.Provider value={{value,datglobaluserlogin}}>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Splash" mode="modal" screenOptions={{ headerShown: false }}>
       <Stack.Group>

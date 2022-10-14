@@ -123,21 +123,21 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
 
     const searchFilter = (text) => {
         
-            if(text) {
+           
                 const newData = getdatawr.filter((item) => {
-                    const itemData = item.date ? item.date : '';
+                    const itemData = `${item.date}`;
                     const textData = text.toUpperCase();
                     return itemData.indexOf(textData) > -1;                 
                 });
                 setfilterData(newData);
                 setSearch(text);
+            
+            
+            // else {
+            //     setfilterData(getdatawr);
+            //     setSearch(text);
                 
-            }
-            else {
-                setfilterData(getdatawr);
-                setSearch(text);
-                
-            }
+            // }
         
     }
 
@@ -168,6 +168,9 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
         setSstatus(item.sstatus);
         setSremark(item.sremark);
     }
+
+    var convertdatedrepair = moment(new Date(drepair)).format('DD-MM-YYYY');
+    var convertdatadinput = moment(new Date(dinput)).format('DD-MM-YYYY HH:mm:ss');
 
 
 
@@ -327,18 +330,21 @@ export default function RequestWrScreen({animatedValue,visible,extended,label,an
              <Avatar.Icon size={100} icon="shield-account" color="" style={{marginHorizontal:'30%',backgroundColor:'white'}} />
               <Text style={{fontSize:16, fontWeight: 'bold', marginHorizontal: '14%'}}>{snik}<Text style={{color:'#01a4a5', fontSize:17}}> {snikname}</Text></Text>
               <Text style={{fontSize:15, fontWeight: 'bold', marginHorizontal: '15%'}}>{swr} | <Text style={{color:'#a50201'}}>{spriority}</Text></Text>
+              
               <Divider/>
-              <Text>Machine Info :</Text>
-              <Text style={{fontWeight:'bold'}}>{smach} | {smachname}</Text>
-              <Text>Datetime Failure:</Text>
-              <Text style={{fontWeight:'bold'}}>{trepair} | {drepair}</Text>
-              <Text>Problem :</Text>
-              <Text style={{fontWeight:'bold'}}>{sproblem}</Text>
-              <Text>Type of Urgency:</Text>
-              <Text style={{fontWeight:'bold'}}>{surgency}</Text>
+              <Text>🕖Request Time:</Text>
+              <Text style={{fontWeight:'bold',marginLeft:'5%',marginBottom: '3%'}}>{convertdatadinput}</Text>
+              <Text>⚙️Machine Info:</Text>
+              <Text style={{fontWeight:'bold',marginLeft:'5%',marginBottom: '3%'}}>{smach} | {smachname}</Text>
+              <Text>🕖Datetime Failure:</Text>
+              <Text style={{fontWeight:'bold',marginLeft:'5%',marginBottom: '3%'}}>{trepair} | {convertdatedrepair}</Text>
+              <Text>🔧Problem: </Text>
+              <Text style={{fontWeight:'bold',marginLeft:'5%',marginBottom: '3%'}}>{sproblem}</Text>
+              <Text>🔧Type of Urgency:</Text>
+              <Text style={{fontWeight:'bold',marginLeft:'5%',marginBottom: '3%'}}>{surgency}</Text>
               <Divider/>
-              <Text style={{fontWeight:'bold', fontSize:14, marginTop:'5%'}}>Status   : <Text style={{ backgroundColor:'#eba136',color:'white', fontSize:18, fontWeight: 'bold'}}>{sstatus}</Text> </Text>
-              <Text style={{fontWeight:'bold', fontSize:14}}>Remark :{sremark}</Text>
+              <Text style={{fontWeight:'bold', fontSize:14, marginTop:'5%',marginBottom: '3%'}}>👷🏻‍♂️Status   : <Text style={{ backgroundColor:'#eba136',color:'white', fontSize:18, fontWeight: 'bold'}}>{sstatus}</Text> </Text>
+              <Text style={{fontWeight:'bold', fontSize:14}}>👷🏻‍♂️Remark :{sremark}</Text>
             </Dialog.Content>
             <Dialog.Actions>
             <Button onPress={hideDialog}>Done</Button>

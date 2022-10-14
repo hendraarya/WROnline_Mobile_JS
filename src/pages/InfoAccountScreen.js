@@ -1,7 +1,10 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {Text, StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import  {IconButton, Card,Avatar} from 'react-native-paper';
+
+//Add UseContext for create variable global
+import AuthContext from "../context/AuthContext";
 
 //Create Main Container
 import MainContainer from "../components/MainContainer";
@@ -19,6 +22,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 export default function InfoAccountScreen({navigation}){
 
     const [showAlert, setShowAlert] = useState(false);
+
+    const {datglobaluserlogin} = useContext(AuthContext);
 
     const showAlert2 = () => {
     setShowAlert(true);
@@ -46,11 +51,11 @@ export default function InfoAccountScreen({navigation}){
             <MainContent>
 
             <View style={{backgroundColor:'#4c9ba5', height:'18%', padding: '6%' ,flexDirection:'row', marginTop:'1%'}}>
-                <Avatar.Text size={80} label="P3" />
+                <Avatar.Text size={80} label={datglobaluserlogin.datauserlogin.code_user} />
                 
                 <View style={{margin:'5%'}}>
-                    <Text style={{color: 'white', fontWeight:'bold', fontSize:16}}>Production 3</Text>
-                    <Text style={{color:'white', fontWeight:'bold', fontSize:14}}>4220 <Text style={{color:'#fcd25d', fontSize:16}}>Production 1.1.1 - GASKET</Text></Text> 
+                    <Text style={{color: 'white', fontWeight:'bold', fontSize:16}}>{datglobaluserlogin.datauserlogin.sname}</Text>
+                    <Text style={{color:'white', fontWeight:'bold', fontSize:14}}>{datglobaluserlogin.datauserlogin.ssection} <Text style={{color:'#fcd25d', fontSize:16}}>{datglobaluserlogin.datauserlogin.ssectdesc}</Text></Text> 
                 </View>
             </View>
 

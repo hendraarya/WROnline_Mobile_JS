@@ -1,12 +1,16 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
+
+//Add UseContext for create variable global
+import AuthContext from "../context/AuthContext";
 
 //Add Component
 import { FilledButton } from "../components/FilledButton";
-import AwesomeAlert from 'react-native-awesome-alerts';
+import {MessageLogin} from "../components/MessageLogin";
 
 //Add Additional Library
 import {TextInput} from 'react-native-paper';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 //Library API
 import axios from "axios";
@@ -14,7 +18,9 @@ import axios from "axios";
 export default function LoginScreen({navigation}) {
 
     const [showAlert, setShowAlert] = useState(false);
-    const [error, setError] = useState('');
+    const [messagelogin, setMessagelogin] = useState('');
+
+    const {datglobaluserlogin} = useContext(AuthContext);
 
     const showAlert2 = () => {
     setShowAlert(true);
@@ -35,15 +41,15 @@ export default function LoginScreen({navigation}) {
             .post('http://10.202.10.77:3000/api/login', data)
             /* localhost emulator harus diganti dengan ip local : 10.0.2.2, agar device tidak bingung, soalnya device use localhost */
             .then( async res => {
-                await setUsername('');
-                await setPassword('');
+                setUsername('');
+                setPassword('');
+                setMessagelogin('');
+                await datglobaluserlogin.setDatauserlogin(res.data.data[0]);
                 await navigation.navigate('Home');
-                
             })
             .catch(async err => {
                 console.log(err);
-                await setError(err.response.data.message);
-                // await showAlert2();
+                setMessagelogin(err.response.data.message);
             })
     }
 
@@ -53,7 +59,7 @@ export default function LoginScreen({navigation}) {
                 <Image source={require('../assets/images/logonmaxsmall2.png')} />
             </View>
             <View style={styles.content}>
-                    <Text>{error}</Text>
+                 <MessageLogin message={messagelogin} />
                  <TextInput label="Username" placeholder="Username" style={styles.input} value={username} onChangeText={(value) => setUsername(value)}/>
                  <TextInput label="Password" placeholder="Password" secureTextEntry={true} value={password} right={<TextInput.Icon icon="eye" />} style={styles.input} onChangeText={(value) => setPassword(value)}/>
                 <FilledButton title='Masuk' style={styles.button} onPress={submitwronline} />
@@ -67,7 +73,7 @@ export default function LoginScreen({navigation}) {
           show={showAlert}
           showProgress={false}
           title="Message"
-          message= {error}
+          message= {messagelogin}
           closeOnTouchOutside={true}
           closeOnHardwareBackPress={false}
         />
