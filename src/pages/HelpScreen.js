@@ -1,22 +1,24 @@
 import React from 'react';
 import {Text, StyleSheet, View, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 
+//Add Library Icon
+import Icon from 'react-native-vector-icons/Ionicons';
 
 //Create Main Container
 import MainContainer from "../components/MainContainer";
 import MainHeader from "../components/MainHeader";
 import MainContent from "../components/MainContent";
-import MainFooter from "../components/MainFooter";
 
-//Add Component 
-import { MenuHeader } from "../components/MenuHeader";
-import { MenuFooter } from "../components/MenuFooter";
+//Utils
+import  {Avatar} from 'react-native-paper';
 
-
+//Start Function
 export default function HelpScreen({navigation}){
+
+    //Start Return
     return(
           <MainContainer>
+
             <MainHeader>
                 <View style={styles.mainheader}>
                     <TouchableOpacity >
@@ -25,14 +27,20 @@ export default function HelpScreen({navigation}){
                     <Text style={styles.text}>Info Center</Text>
                 </View>
             </MainHeader>
+
             <MainContent>
-                <Text>Halaman Info Account</Text>
-
+                <View style={{marginVertical:'50%', marginHorizontal:'20%', width:'100%'}}>
+                    <Avatar.Icon size={100} icon="alert-rhombus" style={{marginLeft:'15%'}} />
+                    <Text style={{fontSize:24, fontWeight:'bold', color:'#dd2f2f'}}>Under Construction...</Text>
+                    <Text style={{fontSize:17, fontWeight:'bold', color:'#003366', marginLeft:'5%'}}>Feature Coming Soon!!</Text>
+                </View>
             </MainContent>
-
+            
         </MainContainer>
     );
+    //End Return
 }
+//End Function
 
 
 const styles = StyleSheet.create({

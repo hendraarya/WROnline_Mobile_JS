@@ -1,5 +1,7 @@
 import React from "react";
 import { Text, ImageBackground } from "react-native";
+
+//Add Library Stylesheet
 import tailwind from "twrnc";
 
 export default function Heading({ children, style, ...props }) {

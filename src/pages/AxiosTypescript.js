@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+//this pages isn't use for this project WR Online, only for reference to develop apps
 export async function AxiosTypescript() {
     try {
         // 👇️ const data: GetUsersResponse

@@ -1,13 +1,12 @@
 import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// import SplashScreen from '../pages/SplashScreen';
-// import RegistrationUser from '../pages/RegistrationUser';
-// import LoginUser from '../pages/LoginUser';
+//Import Pages
 import LoginScreen from '../pages/LoginScreen';
 import RequestWrScreen from '../pages/RequestWrScreen';
 import InputWrScreen from '../pages/InputWrScreen';
 
+//Declare for Navigator each pages in Apps
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 const AuthStack = createNativeStackNavigator();
 const LoginStack = createNativeStackNavigator();
 
@@ -17,14 +16,12 @@ export function AuthStackNavigator() {
             // mode={'modal'}
             // initialRouteName="SplashScreen"
             screenOptions={{ headerShown: false }}>
-            {/* <AuthStack.Screen name={'SplashName'} component={SplashScreen} /> */}
             <AuthStack.Screen name={'LoginStack'}>
                 {() => (
                     <LoginStack.Navigator
 
                         initialRouteName="SplashScreen"
                         screenOptions={{ headerShown: false }}>
-                        {/* <LoginStack.Screen name={'Screen'} component={SplashScreen} /> */}
                         <LoginStack.Screen name={'Login'} component={LoginScreen} />
                     </LoginStack.Navigator>
                 )}

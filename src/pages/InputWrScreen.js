@@ -1,84 +1,95 @@
-import React, { useState, useEffect, useContext, useMemo } from "react";
+import React, { useState, useEffect, useContext} from "react";
 import { Text, StyleSheet, TouchableOpacity, View } from 'react-native';
-import moment from "moment";
-import { RadioButton, TextInput, Divider, Dialog, Portal, Provider, Button } from "react-native-paper";
-import Icon from 'react-native-vector-icons/Ionicons';
-import DatePicker from 'react-native-date-picker'
-import { FilledButton } from "../components/FilledButton";
-import { QRcodeContext } from "../context/QRcodeContext";
 
-//Library API
-import axios from "axios";
-
-//Utils
-import {sleep} from '../Utils/sleep';
-import { dialogIcons } from "../Utils/dialogIcons";
-import AwesomeAlert from 'react-native-awesome-alerts';
-
-
-//Create Container 
+//Create Main Container
 import MainContainer from "../components/MainContainer";
 import MainContent from "../components/MainContent";
 import MainFooter from "../components/MainFooter";
 import MainHeader from "../components/MainHeader";
 
-//use Context(Variable Global)
-import { WROnlineContext } from "../context/WROnlineContext";
+//Add UseContext for create variable global
 import AuthContext from "../context/AuthContext";
+import { QRcodeContext } from "../context/QRcodeContext";
+
+//Add Component 
+import { FilledButton } from "../components/FilledButton";
+
+//Add Additional Library
+import { RadioButton, TextInput, Divider, Dialog, Portal, Provider, Button } from "react-native-paper";
+import moment from "moment";
+import DatePicker from 'react-native-date-picker';
+
+//Add Library Icon
+import Icon from 'react-native-vector-icons/Ionicons';
+
+//Utils
+import {sleep} from '../Utils/sleep';
+import AwesomeAlert from 'react-native-awesome-alerts';
+
+//Library API
+import axios from "axios";
+
+//Import config URL API
+import { BASE_URLAPI } from '../config/URLAPI';
 
 //QR CODE Scanner
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
-import { async } from "rxjs";
 
-
-
-
-
+//Start Function
 export default function InputWrScreen({navigation,route}) {
 
-    // let qrvalue = {route.param.paramKey};
-    const valuehendra = useContext(QRcodeContext);
     // Variable for get data sending Request WR Online
     const [nik, setNik] = useState('');
     const [machineid, setMachineId] = useState('');
+
+    //Access Function use Context(Variable Global)
+    const {value} = useContext(AuthContext);
+
+    //Variable for datepicker
     const [date3, setDate3] = useState(new Date());
     const [opendate, setOpendate] = useState(false);
     const [time3, setTime3] = useState(new Date());
     const [opentime, setOpentime] = useState(false);
+
+    //Variable for set value from combo box problem
     const [problem, setProblem] = useState('');
     const [valueproblem, setValueProblem] = React.useState('');
     const [visibleproblem, setVisibleProblem] = React.useState(false);
     const showDialog = () => setVisibleProblem(true);
     const hideDialog = () => setVisibleProblem(false);
+
+    //Variable for set value from combo box Urgency
     const [valueurgency, setValueUrgency] = React.useState('');
     const [visibleurgency, setVisibleUrgency] = React.useState(false);
     const showDialogUrgency = () => setVisibleUrgency(true);
     const hideDialogUrgency = () => setVisibleUrgency(false);
-    const [error, setError] = React.useState('');
     
-    const [users, setUsers] = useState([]);
-    let disableurgent = valueproblem;
+    //Variable for Show message of Send WR
     const [showAlert, setShowAlert] = useState(false);
+    let disableurgent = valueproblem;
 
+    //Variable for convert data date & time use moment js
+    var convertmoment_date = moment(new Date(date3)).format('YYYY-MM-DD');
+    var convertmoment_time = moment(new Date(time3)).format('HH:mm:ss');
+
+    //Function for set Show message of Send WR
     const showAlert2 = () => {
-    setShowAlert(true);
+        setShowAlert(true);
+    };
 
-  };
+    const hideAlert = () => {
+        setShowAlert(false);
+     };
 
-  const hideAlert = () => {
-     setShowAlert(false);
-  };
-
-    //Access Function use Context(Variable Global)
-    const {value} = useContext(AuthContext);
-    // const { sendwr } = React.useContext(WROnlineContext);
-
+    //Functon Back to menu before
     const backmenu = async () => {
         await value.setQrnik("");
         await value.setQrmachineid("");
         navigation.navigate('RequestWr')
     }
+
+    //Start Get Data with AXIOS
 
     //Function Submit WR Online
     const submitwronline = () => {
@@ -92,40 +103,26 @@ export default function InputWrScreen({navigation,route}) {
             surgency: valueurgency.toUpperCase(),
         };
         axios
-            .post('http://10.202.10.77:3000/api/getnikname', data)
-            /* localhost emulator harus diganti dengan ip local : 10.0.2.2, agar device tidak bingung, soalnya device use localhost */
-            .then( async res => {
-                // console.log('res:', res);
-                
-                await value.setQrnik("");
-                await value.setQrmachineid("");
-                console.log('WR Berhasil Terkirim!');
-                // await dialogIcons();
-                await showAlert2();
-                await sleep(2000);
-                await navigation.navigate('RequestWr');
-            })
-            .catch(err => {
+          /* localhost emulator harus diganti dengan ip local : 10.0.2.2, agar device tidak bingung, soalnya device use localhost */
+        .post(`${BASE_URLAPI}/api/getnikname`, data)
+        .then( async res => {               
+            await value.setQrnik("");
+            await value.setQrmachineid("");
+            console.log('WR Berhasil Terkirim!');
+            // await dialogIcons();
+            showAlert2();
+            await sleep(2000);
+            await navigation.navigate('RequestWr');
+        })
+        .catch(err => {
                 console.log(err.response.data)
-            })
+        })
     }
 
-    const getData = () => {
-        axios.get('http://10.202.10.77:3000/api/mesin').then(res => {
-            // console.log('res get data:', res.data);
-            setUsers(res.data.data);
+    //End Get Data with AXIOS
 
-        });
-    };
-
-    // convert data date & time use moment js
-    var convertmoment_date = moment(new Date(date3)).format('YYYY-MM-DD');
-    var convertmoment_time = moment(new Date(time3)).format('HH:mm:ss');
-    // const [qrmachine,setQrmachine]=useState(qrvalue);
-
+    //useEffect for Re render Component , even first running
     useEffect(() => {
-        getData();
-        console.log('datalength ini :', users);
         console.log('Date Selection:', date3);
         console.log('Time Selection:', time3);
         console.log('Date Convert Momentjs:', convertmoment_date);
@@ -135,8 +132,10 @@ export default function InputWrScreen({navigation,route}) {
     }, [date3, time3, convertmoment_date, convertmoment_time]);
 
 
+    //Start Return
     return (
         <MainContainer>
+
             <MainHeader>
                 <View style={styles.mainheader}>
                     <TouchableOpacity >
@@ -145,6 +144,7 @@ export default function InputWrScreen({navigation,route}) {
                     <Text style={styles.text}>Request WR Online</Text>
                 </View>
             </MainHeader>
+
             <MainContent>
                 <View style={{ flexDirection: 'row',alignContent:"flex-start", marginVertical:30 ,marginHorizontal:30}}>
                     <TouchableOpacity onPress={() => navigation.navigate('Qrcode',{fill: "fillnik"})} style={{ width: '100%' }}>
@@ -161,7 +161,9 @@ export default function InputWrScreen({navigation,route}) {
                     />
                     </TouchableOpacity>
                 </View>
+
                 <Divider />
+
                 <View style={{ flexDirection: 'row', margin: 30 }}>
                     <TouchableOpacity onPress={() => setOpendate(true)} style={{ width: '50%' }} >
                         <TextInput label="Failure Date" left={<TextInput.Icon icon="calendar-range" />}
@@ -182,7 +184,9 @@ export default function InputWrScreen({navigation,route}) {
                 <View style={{ flexDirection: 'row', margin: 30 }}>
                     <TextInput mode="flat" label="Problem" style={{ width: '100%' }} left={<TextInput.Icon icon="alert-circle-outline" />} value={problem} onChangeText={(value) => setProblem(value)} />
                 </View>
+
                 <Divider />
+
                 <Provider>
                     <View style={{ margin: 30, width: '85%' }}>
                         <TouchableOpacity onPress={showDialog} >
@@ -206,7 +210,9 @@ export default function InputWrScreen({navigation,route}) {
                         </Portal>
                     </View>
                 </Provider>
+
                 <Divider />
+
                 <Provider>
                     <View style={{ margin: 30, width: '85%' }}>
                         <TouchableOpacity onPress={showDialogUrgency} disabled={disableurgent === 'Emergency Stop'? false:true} >
@@ -231,6 +237,7 @@ export default function InputWrScreen({navigation,route}) {
                     </View>
                 </Provider>
 
+                {/* This function datepicker mode:date */}
                 <DatePicker
                     androidVariant="iosClone"
                     locale="en"
@@ -251,6 +258,7 @@ export default function InputWrScreen({navigation,route}) {
                     }}
                 />
 
+                {/* This function datepicker mode:time */}
                 <DatePicker
                     androidVariant="iosClone"
                     locale="en"
@@ -272,41 +280,28 @@ export default function InputWrScreen({navigation,route}) {
                     }}
                 />
 
+                {/* This function Show message, if Send WR Success */}
                 <AwesomeAlert
-          show={showAlert}
-          showProgress={false}
-          title="Message"
-          message="Sending Work Request Successfully !!"
-          closeOnTouchOutside={true}
-          closeOnHardwareBackPress={false}
-        />
+                    show={showAlert}
+                    showProgress={false}
+                    title="Message"
+                    message="Sending Work Request Successfully !!"
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={false}
+                />
 
             </MainContent>
+
             <MainFooter>
                 <FilledButton title="Send WR to Maintenance" style={styles.button} onPress={submitwronline} />
-                {/* async () => {
-                    const data = {
-                    snik: nik,
-                smach: machineid,
-                drepair: convertmoment_date,
-                trepair: convertmoment_time,
-                sproblem: problem,
-                stype: valueproblem,
-                surgency: valueurgency,
-                    };
-                try {
-                    await sendwr(data);
-                navigation.pop();
-
-                    } catch (e) {
-                    // setError(e.message);   
-                }
-                } */}
             </MainFooter>
+
         </MainContainer>
 
     )
+    //End Return
 }
+//End Function
 
 const styles = StyleSheet.create({
     mainheader: {

@@ -1,35 +1,36 @@
 import React, { Component } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { StackActions } from '@react-navigation/native';
-import { ViewPropTypes } from 'deprecated-react-native-prop-types';
 
-
+//Start Class Component
 class SplashScreen extends Component{
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+    constructor(props) {
+      super(props);
+      this.state = {};
+    }
 
-  componentDidMount() {
-    setTimeout(() => {
-      this.props.navigation.dispatch(StackActions.replace('Login'));
-    }, 3000);
-  }
+    componentDidMount() {
+      setTimeout(() => {
+        this.props.navigation.dispatch(StackActions.replace('Login'));
+      }, 3000);
+    }
   render() {
+    //Start Return
     return (
       <View style={Styles.container}>
-
-        <View style={Styles.flex1}>
-          <Image source={require('../assets/images/logonmaxsmall2.png')} />
-        </View>
-        <View style={Styles.flex2}>
-          <Text style={Styles.text1}>Powered By | Version 1.0 </Text>
-          <Text style={Styles.text2}>Technology Control ©2022</Text>
-        </View>
+          <View style={Styles.flex1}>
+              <Image source={require('../assets/images/logonmaxsmall2.png')} />
+          </View>
+          <View style={Styles.flex2}>
+              <Text style={Styles.text1}>Powered By | Version 1.0 </Text>
+              <Text style={Styles.text2}>Technology Control ©2022</Text>
+          </View>
       </View>
     );
   }
+  //End Return
 }
+//EN]nd Class Component
 export default SplashScreen;
 
 const Styles = StyleSheet.create({

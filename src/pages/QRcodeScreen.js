@@ -1,27 +1,31 @@
 import React, { Fragment,useState, useEffect,useRef, useContext} from "react";
 import { TouchableOpacity, Text, Linking, View, Image, ImageBackground, StyleSheet, Dimensions } from 'react-native';
-import QRCodeScanner from 'react-native-qrcode-scanner';
+
+//Add UseContext for create variable global
 import AuthContext from "../context/AuthContext";
 
+//QR CODE Scanner
+import QRCodeScanner from 'react-native-qrcode-scanner';
 
+//For setting Size screen
 const deviceWidth = Dimensions.get('screen').width;
 const deviceHeight = Dimensions.get('screen').height;
 
+//Start Function
 export default function QRcode ({navigation,route}) { 
-    // let qrmachineid, qrnik ;
+
+    //Variable set showing QRCode
     const scanner = useRef(null); //useRef itu fungsinya seperti id
     const [scan, setScan] = useState(true);
     const [scanResult, setScanResult] = useState(false);
     const [result, setResult] = useState(null);
 
+    //Variable get data from useContext
     const {value} = useContext(AuthContext);
     console.log('Context qrmachineid:',value.qrmachineid);
     console.log('Context qrnik:',value.qrnik);
 
-    useEffect(() => {
-        setResult(null);
-    }, []);
-
+    //Function, set data if scan,QR Code Success
     const onSuccess = async (e) => {
         const check = e.data.substring(0, 4);
         console.log('scanned data ' + check);
@@ -34,28 +38,25 @@ export default function QRcode ({navigation,route}) {
         } else {
             if(route.params.fill === 'fillnik')
             {
-            await setResult(e);
-            console.log('hasil QRcode.js nik:', e.data);
-            await setScan(false);
-            await setScanResult(true);
-            await value.setQrnik(e.data)
-            await navigation.navigate('InputWr',{paramKey:value.qrmachineid,paramKey2: e.data});
+                setResult(e);
+                console.log('hasil QRcode.js nik:', e.data);
+                setScan(false);
+                setScanResult(true);
+                await value.setQrnik(e.data)
+                await navigation.navigate('InputWr',{paramKey:value.qrmachineid,paramKey2: e.data});
             }
             else if(route.params.fill === 'fillmachineid')
             {
-            await setResult(e);
-            console.log('hasil QRcode.js machine id:', e.data);
+                setResult(e);
+                console.log('hasil QRcode.js machine id:', e.data);
             
-            await setScan(false);
-            await setScanResult(true);
-            await value.setQrmachineid(e.data);
-            await navigation.navigate('InputWr',{paramKey:e.data,paramKey2: value.qrnik});     
-            }
-          
-    }
+                setScan(false);
+                setScanResult(true);
+                await value.setQrmachineid(e.data);
+                await navigation.navigate('InputWr',{paramKey:e.data,paramKey2: value.qrnik});     
+            }  
+      }
    };
-
-  
 
     const activeQR = () => {
         setScan(true);
@@ -64,41 +65,48 @@ export default function QRcode ({navigation,route}) {
         setScan(true);
         setScanResult(false);
     }
-        return (
-            <View style={styles.scrollViewStyle}>
-                <Fragment>
 
-                    {/* Strat Show camera to scan Barcode */}
-                    {scan &&
-                        <QRCodeScanner
-                            reactivate={true}
-                            showMarker={true}
-                            ref={scanner}
-                            onRead={onSuccess}
-                            topContent={
-                                <Text style={styles.centerText}>
-                                    Please move your camera {"\n"} over the QR Code
-                                </Text>
-                            }
-                        bottomContent={
-                            <View>
-                                <ImageBackground source={require('../assets/images/bottom-panel.png')} style={styles.bottomContent}>
-                                    <TouchableOpacity style={styles.buttonScan2}
-                                        onPress={() => scanner.current.reactivate()}
-                                        onLongPress={() => setScan(false)}>
-                                        <Image source={require('../assets/images/camera2.png')}></Image>
-                                    </TouchableOpacity>
-                                </ImageBackground>
-                            </View>
+    //useEffect for Re render Component , even first running
+        useEffect(() => {
+            setResult(null);
+        }, []);
+
+    //Start Return
+    return (
+        <View style={styles.scrollViewStyle}>
+            <Fragment>
+                {/* Strat Show camera to scan Barcode */}
+                {scan &&
+                    <QRCodeScanner
+                        reactivate={true}
+                        showMarker={true}
+                        ref={scanner}
+                        onRead={onSuccess}
+                        topContent={
+                            <Text style={styles.centerText}>
+                                Please move your camera {"\n"} over the QR Code
+                            </Text>
                         }
-                        />
+                    bottomContent={
+                        <View>
+                            <ImageBackground source={require('../assets/images/bottom-panel.png')} style={styles.bottomContent}>
+                                <TouchableOpacity style={styles.buttonScan2}
+                                    onPress={() => scanner.current.reactivate()}
+                                    onLongPress={() => setScan(false)}>
+                                    <Image source={require('../assets/images/camera2.png')}></Image>
+                                </TouchableOpacity>
+                            </ImageBackground>
+                        </View>
                     }
-                    {/* End Show camera to scan Barcode */}
-                </Fragment>
-            </View>
-
-        );
+                    />
+                }
+                {/* End Show camera to scan Barcode */}
+            </Fragment>
+        </View>
+    );
+     //End Return
 }
+//End Function
 
 const styles = StyleSheet.create({
     scrollViewStyle: {

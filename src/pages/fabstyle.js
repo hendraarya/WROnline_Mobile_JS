@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { AnimatedFAB } from 'react-native-paper';
 
+//this pages isn't use for this project WR Online, only for reference to develop apps
 const MyComponent = ({
     animatedValue,
     visible,

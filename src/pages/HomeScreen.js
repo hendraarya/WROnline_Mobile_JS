@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {Text, Image, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet} from 'react-native';
 
 //Create Main Container
 import MainContainer from "../components/MainContainer";
@@ -20,28 +20,36 @@ import {Card,Title,Divider} from 'react-native-paper';
 //Library API
 import axios from "axios";
 
+//Import config URL API
+import { BASE_URLAPI } from '../config/URLAPI';
 
+
+//Start Function
 export default function HomeScreen({navigation}){
 
     //Declare useState for get data AXIOS
     const [gettotalWrtoday, setGettotalWrtoday] = useState({count:''});
-    const [getdatcountstatuswr, setGetdatcountstatuswr] = useState({count:''})
+    const [getdatcountstatuswr, setGetdatcountstatuswr] = useState({count:''});
 
+    //get data from variable global useContext
     const {datglobaluserlogin} = useContext(AuthContext);
 
-    //start Get Data with AXIOS
+    //Start Get Data with AXIOS
+    
+    //get data total wr today
     const getData_totalwrtoday = () => {
     axios
-    .get('http://10.202.10.77:3000/api/countdatawrtoday')
+    .get(`${BASE_URLAPI}/api/countdatawrtoday`)
     .then(res => {
             // console.log("nilai count total WR Today:", res.data.data);
             setGettotalWrtoday(res.data.data[0]);
         });
     }
     
+    //get data status count data wr todays
     const getcountstatuswr = () => {
         axios
-        .get('http://10.202.10.77:3000/api/getcountallstatuswr')
+        .get(`${BASE_URLAPI}/api/getcountallstatuswr`)
         .then(res => {
             setGetdatcountstatuswr(res.data.data.rows[0]);
         });
@@ -54,11 +62,14 @@ export default function HomeScreen({navigation}){
         getcountstatuswr();   
     },[gettotalWrtoday]);
 
+    //Start Return
     return(
         <MainContainer>
+
             <MainHeader>
                 <MenuHeader onPress1={() => navigation.navigate('notif')} onPress2={() => navigation.navigate('help')}/>
             </MainHeader>
+
             <MainContent>
                 <View style={styles.maincontent}>
                     <Text style={styles.textwelcome}>Welcome <Text style={{color:'#d66493', fontSize: 21, fontVariant: ['oldstyle-nums'], fontStyle: 'italic', fontWeight:'bold' }}>{datglobaluserlogin.datauserlogin.sname}</Text></Text>
@@ -89,15 +100,17 @@ export default function HomeScreen({navigation}){
                         </Card.Content>
                     </Card>
                 </View>
-
             </MainContent>
 
             <MainFooter>
                  <MenuFooter color1='#92dc7e' color2='white' color3='white' style1={{ color: '#92dc7e' }} style2={{ color: 'white' }} style3={{ color: 'white' }} onPress1={() => navigation.navigate('Home')} onPress2={() => navigation.navigate('RequestWr')} onPress3={() => navigation.navigate('InfoAccount')}/>
             </MainFooter>
+            
         </MainContainer>
     );
+    //End Return
 }
+//End Function
 
 const styles = StyleSheet.create({
     maincontent:{

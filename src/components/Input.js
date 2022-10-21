@@ -1,6 +1,5 @@
 import React from "react";
 import { TextInput, StyleSheet, View } from "react-native";
-import Icon from 'react-native-vector-icons/Ionicons';
 
 export default function Input({ style, ...props }) {
     return (

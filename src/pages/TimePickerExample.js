@@ -1,5 +1,7 @@
+//this pages isn't use for this project WR Online, only for reference to develop apps
 import React, { useEffect, useState } from 'react';
 import DatePicker from 'react-native-modern-datepicker';
+
 
 export const TimePickerExample = () => {
     const [time, setTime] = useState('');
